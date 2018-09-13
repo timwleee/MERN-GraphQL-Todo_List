@@ -33,6 +33,17 @@ const RemoveMutation = gql`
   }
 `;
 
+
+const CreateTodoMutation = gql`
+  mutation($text: String!) {
+    createTodo(text: $text) {
+      id
+      text
+      complete
+    }
+  }
+`;
+
 class App extends Component {
 
   updateTodo = async todo => {
@@ -60,6 +71,19 @@ class App extends Component {
       update: store => {
         const data = store.readQuery({ query: TodosQuery });
         data.todos = data.todos.filter(x => x.id !== todo.id)
+        store.writeQuery({ query: TodosQuery, data });
+      }
+    })
+  };
+
+  createTodo = async text => {
+    await this.props.createTodo({
+      variables: {
+        text,
+      },
+      update: (store, { data: { createTodo } }) => {
+        const data = store.readQuery({ query: TodosQuery });
+        data.todos.unshift(createTodo);
         store.writeQuery({ query: TodosQuery, data });
       }
     })
@@ -109,5 +133,6 @@ class App extends Component {
 export default compose(
   graphql(RemoveMutation, { name: "removeTodo" }),
   graphql(UpdateMutation, { name: "updateTodo" }),
+  graphql(CreateTodoMutation, { name: "createTodo" }),
   graphql(TodosQuery)
 )(App);

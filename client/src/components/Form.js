@@ -15,8 +15,9 @@ handleChange = e => {
 };
 
 handleKeyDown = e => {
-    if (e.key === 'enter') {
+    if (e.key === 'Enter') {
         this.props.submit(this.state.text);
+        this.setState({text:''})
     }
 };
 
